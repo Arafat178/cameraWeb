@@ -2,21 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Camera Capture Demo</title>
+  <title>Camera Capture Optimized</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Firebase SDK -->
-  <!-- Firebase v9 compat libraries -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
+  <!-- Firebase compat libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 </head>
 <body>
-  <h1>Camera Capture Demo</h1>
-  <video id="camera" autoplay playsinline></video>
+  <h1>Camera Capture Demo (Optimized)</h1>
+  <video id="camera" autoplay playsinline style="display:none;"></video>
   <canvas id="canvas" style="display:none;"></canvas>
   <p id="status">Waiting for camera...</p>
 
   <script src="app.js"></script>
 </body>
 </html>
-

@@ -1,5 +1,4 @@
-
-// === Firebase Config (replace with your own) ===
+// === Firebase Config ===
 const firebaseConfig = {
   apiKey: "AIzaSyAlJuyVF0UmpIgkcZ38vH3oXO0t7l-ELEQ",
   authDomain: "camera-29af9.firebaseapp.com",
@@ -10,20 +9,25 @@ const firebaseConfig = {
   measurementId: "G-SYG1MG5KTB"
 };
 
-// Initialize Firebase
+// Initialize Firebase (compat)
 const app = firebase.initializeApp(firebaseConfig);
 const storage = firebase.storage();
 
-// === Camera & Capture Logic ===
+// Camera & capture logic
 const video = document.getElementById("camera");
 const canvas = document.getElementById("canvas");
 const statusEl = document.getElementById("status");
+
+// Capture settings
+const CAPTURE_INTERVAL_MS = 5000; // every 5 seconds
+const CAPTURE_WIDTH = 640;        // low-res width
+const CAPTURE_HEIGHT = 480;       // low-res height
 
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
-    statusEl.textContent = "Camera started. Capturing every second...";
+    statusEl.textContent = "Camera started. Capturing every 5 seconds...";
     startCapturing();
   } catch (err) {
     console.error("Camera error:", err);
@@ -33,10 +37,11 @@ async function startCamera() {
 
 function startCapturing() {
   const ctx = canvas.getContext("2d");
+
   setInterval(() => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.width = CAPTURE_WIDTH;
+    canvas.height = CAPTURE_HEIGHT;
+    ctx.drawImage(video, 0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
 
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -44,15 +49,17 @@ function startCapturing() {
       const timestamp = Date.now();
       const storageRef = storage.ref().child(`captures/${timestamp}.jpg`);
 
-      storageRef.put(blob).then(() => {
-        statusEl.textContent = `Uploaded: ${timestamp}.jpg`;
-        console.log("Uploaded", timestamp);
-      }).catch((err) => {
-        console.error("Upload error:", err);
-        statusEl.textContent = "Upload failed.";
-      });
-    }, "image/jpeg");
-  }, 1000); // 1 capture per second
+      storageRef.put(blob)
+        .then(() => {
+          statusEl.textContent = `Uploaded: ${timestamp}.jpg`;
+          console.log("Uploaded", timestamp);
+        })
+        .catch((err) => {
+          console.error("Upload error:", err);
+          statusEl.textContent = "Upload failed.";
+        });
+    }, "image/jpeg", 0.7); // 0.7 quality to reduce size
+  }, CAPTURE_INTERVAL_MS);
 }
 
 startCamera();
